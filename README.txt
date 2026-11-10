@@ -92,3 +92,5 @@ VERSIONE 12 - ARCHIVIO PDF ORIGINALE
 
 VERSIONE 13 - SINCRONIZZAZIONE CLOUD
 La v13 aggiunge accesso account e sincronizzazione di profilo e archivio turni tramite Supabase. Prima dell'uso leggere ISTRUZIONI_CLOUD.txt e applicare SUPABASE_SETUP.sql al proprio progetto. I PDF originali restano locali in questa versione.
+
+GitHub Pages: caricare i file di questa cartella nella radice della repository (non lo ZIP).

@@ -1,0 +1,24 @@
+GESTIONALE TURNI PRO v13 - ATTIVAZIONE SINCRONIZZAZIONE CLOUD
+
+La sincronizzazione usa Supabase (servizio cloud). Per attivarla:
+1) Vai su https://supabase.com e crea un account/progetto personale.
+2) Nel progetto apri SQL Editor, crea una nuova query, incolla tutto il contenuto di SUPABASE_SETUP.sql e premi Run.
+3) Apri Project Settings > API (o Connect): copia Project URL e la chiave anon/public (NON la service_role).
+4) Apri Gestionale Turni PRO v13, espandi “Configurazione collegamento cloud”, inserisci URL e chiave anon/public e premi “Salva configurazione”.
+5) Inserisci la tua email e una password di almeno 8 caratteri. Premi “Crea account”.
+6) Se Supabase richiede conferma email, apri il messaggio ricevuto, conferma e poi torna nell'app per fare “Accedi”.
+7) Premi “Sincronizza adesso”. Ripeti accesso e sincronizzazione su ogni altro dispositivo usando lo stesso account.
+
+COSA VIENE SINCRONIZZATO
+- Profilo personale e nominativo selezionato.
+- Archivio dei turni mensili (dati estratti, modifiche e testo letto dal PDF).
+- In caso di mesi presenti su entrambi i dispositivi viene mantenuta la copia con data di salvataggio più recente.
+
+COSA NON VIENE ANCORA SINCRONIZZATO
+- I file PDF originali conservati in IndexedDB restano sul dispositivo che li ha importati. I dati dei turni sono nel cloud, ma per riaprire il PDF originale su un altro dispositivo occorre una successiva integrazione con Supabase Storage.
+
+SICUREZZA
+- Non condividere mai la chiave service_role. Nell'app va inserita soltanto la chiave anon/public.
+- Le policy RLS nello script SQL limitano ogni account alla propria riga.
+- Conserva comunque un backup JSON periodico.
+- Per pubblicare online, usa HTTPS (ad esempio GitHub Pages). L'anteprima aperta come file locale può avere limitazioni del browser.
