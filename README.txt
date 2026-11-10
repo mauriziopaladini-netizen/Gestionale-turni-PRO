@@ -110,3 +110,19 @@ VERSIONE 15 - HOMEPAGE RINNOVATA E ACCOUNT PRIVATI
 - I dati cloud restano privati per account grazie a Row Level Security.
 - Su dispositivi condivisi, passando a un account diverso, l'archivio locale viene separato per evitare contaminazioni tra utenti.
 - I PDF originali restano sul dispositivo; nel cloud vengono sincronizzati profilo e dati dei turni.
+
+VERSIONE 16 - AREA AMMINISTRATORE E INTERFACCIA MIGLIORATA
+- La configurazione Cloud è mostrata solo all'account autenticato maurizio.paladini@gmail.com.
+- Per la prima configurazione su un nuovo dispositivo, il pannello compare quando viene inserita l'email amministratore nel campo email prima dell'accesso.
+- Gli account dipendente non visualizzano il pannello di configurazione.
+- Aggiunti indicatori del ruolo, area accesso personale e nota privacy.
+- Migliorate gerarchie visive e presentazione della dashboard.
+Nota tecnica: URL e chiave publishable Supabase non sono segreti; la protezione reale dei dati è affidata alle policy RLS nel database. Non inserire mai la service_role key nel browser.
+
+VERSIONE 16 - AREA AMMINISTRATORE E INTERFACCIA MIGLIORATA
+- La configurazione Cloud è mostrata solo all'account autenticato maurizio.paladini@gmail.com.
+- Per la prima configurazione su un nuovo dispositivo, il pannello compare quando viene inserita l'email amministratore nel campo email prima dell'accesso.
+- Gli account dipendente non visualizzano il pannello di configurazione.
+- Aggiunti indicatori del ruolo, area accesso personale e nota privacy.
+- Migliorate gerarchie visive e presentazione della dashboard.
+Nota tecnica: URL e chiave publishable Supabase non sono segreti; la protezione reale dei dati è affidata alle policy RLS nel database. Non inserire mai la service_role key nel browser.
