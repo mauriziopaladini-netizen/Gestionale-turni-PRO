@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#f1f5f9",
   "theme_color": "#2563eb",
-  "description": "Gestionale turni con calendario, esportazione e tema personalizzabile",
+  "description": "La tua agenda personale dei turni di lavoro",
   "icons": [
     {
       "src": "./icon-192.png",

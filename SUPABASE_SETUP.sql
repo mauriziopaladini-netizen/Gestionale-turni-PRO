@@ -26,3 +26,6 @@ create policy "Aggiorna i propri turni"
   to authenticated
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- La registrazione libera è gestita da Supabase Auth.
+-- RLS impedisce a ogni utente di leggere o modificare la riga cloud di un altro account.

@@ -94,3 +94,19 @@ VERSIONE 13 - SINCRONIZZAZIONE CLOUD
 La v13 aggiunge accesso account e sincronizzazione di profilo e archivio turni tramite Supabase. Prima dell'uso leggere ISTRUZIONI_CLOUD.txt e applicare SUPABASE_SETUP.sql al proprio progetto. I PDF originali restano locali in questa versione.
 
 GitHub Pages: caricare i file di questa cartella nella radice della repository (non lo ZIP).
+
+
+VERSIONE 14 - RIPRISTINO AUTOMATICO CLOUD
+- All'apertura dell'app viene controllata la sessione Supabase già salvata nel browser.
+- Se l'utente è ancora autenticato, l'app recupera automaticamente profilo e archivio turni dal cloud e aggiorna la copia locale.
+- Se non c'è una sessione attiva o la rete non è disponibile, l'app resta utilizzabile con i dati locali e mostra un messaggio.
+- Non è necessario inserire nuovamente la password a ogni apertura: la sessione viene mantenuta da Supabase nel browser, salvo logout, scadenza/revoca o cancellazione dei dati del sito.
+- Dopo la modifica, caricare i file della versione 14 nel repository GitHub Pages sovrascrivendo quelli precedenti. Il service worker usa una nuova cache per attivare la versione aggiornata.
+
+
+VERSIONE 15 - HOMEPAGE RINNOVATA E ACCOUNT PRIVATI
+- Interfaccia aggiornata con stile più professionale e ottimizzata per PC e smartphone.
+- Registrazione libera tramite email e password Supabase.
+- I dati cloud restano privati per account grazie a Row Level Security.
+- Su dispositivi condivisi, passando a un account diverso, l'archivio locale viene separato per evitare contaminazioni tra utenti.
+- I PDF originali restano sul dispositivo; nel cloud vengono sincronizzati profilo e dati dei turni.

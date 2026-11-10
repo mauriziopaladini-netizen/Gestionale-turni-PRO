@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Gestionale Turni PRO</title>
@@ -12,7 +12,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  body{background:#f1f5f9}
+  body{background:#eef2f7;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  header{background:linear-gradient(115deg,#0b1220 0%,#142744 58%,#174a78 100%)!important;border-bottom:1px solid rgba(255,255,255,.12)}
+  header h1{letter-spacing:-.035em}
+  header .navbtn{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.08)!important;transition:.2s}
+  header .navbtn:hover,header .navbtn.active{background:rgba(96,165,250,.24)!important;border-color:rgba(147,197,253,.45)}
+  main{max-width:1500px}
+  .app-card{transition:box-shadow .2s,border-color .2s,transform .2s}
+  .app-card:hover{box-shadow:0 14px 34px rgba(15,23,42,.09)}
+  input,select,textarea{border-color:#d7dfeb!important;border-radius:.8rem!important;min-height:42px}
+  button{transition:filter .15s,transform .15s,box-shadow .15s}
+  button:active{transform:translateY(1px)}
+  .premium-hero{background:radial-gradient(circle at 90% 10%,rgba(56,189,248,.24),transparent 28%),linear-gradient(125deg,#081426 0%,#102b4b 56%,#14547b 100%)!important;box-shadow:0 20px 45px rgba(15,36,65,.18)}
+  #personalProfileCard,#cloudSyncCard{box-shadow:0 10px 30px rgba(15,23,42,.055);border-color:#dbe5f0}
+  #personalProfileCard{border-top:3px solid #3b82f6}
+  #cloudSyncCard{border-top:3px solid #10b981}
+  .section-kicker{letter-spacing:.14em}
+  @media(max-width:640px){main{padding-left:12px!important;padding-right:12px!important}.premium-hero{border-radius:22px!important}}
   .shift{font-weight:700;text-align:center;border:1px solid #cbd5e1;padding:5px 3px;min-width:40px}
   .shift-fer{background:#bfdbfe;color:#1e40af}
   .shift-rest{background:#fecaca;color:#991b1b}
@@ -65,7 +81,7 @@ body.theme-dark .shift-other{background:#334155;color:#e2e8f0}
 <body class="min-h-screen text-slate-800">
 <header class="bg-blue-700 text-white shadow-lg">
  <div class="max-w-screen-2xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
-  <div><h1 class="text-xl md:text-2xl font-bold">🕒 Gestionale Turni PRO</h1><p class="text-blue-100 text-sm">I tuoi turni, sempre sotto controllo</p></div>
+  <div><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-2xl shadow-inner">◷</div><div><h1 class="text-xl md:text-2xl font-extrabold">Gestionale Turni <span class="text-sky-300">PRO</span></h1><p class="text-blue-100/80 text-xs md:text-sm tracking-wide">La tua agenda di lavoro, in un unico posto</p></div></div></div>
   <button id="themeToggle" class="no-print rounded-xl border border-blue-400 bg-blue-800 hover:bg-blue-900 px-3 py-2 text-sm font-semibold" aria-label="Cambia tema">🌙 Tema scuro</button>
   <div class="flex gap-2 no-print">
    <button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="home">Home</button>
@@ -105,11 +121,11 @@ body.theme-dark .shift-other{background:#334155;color:#e2e8f0}
  <p class="text-xs text-slate-500">La sincronizzazione comprende profilo e dati dei mesi. I PDF originali restano sul dispositivo in questa versione: per sincronizzare anche i PDF servirà attivare lo spazio file cloud.</p>
 </section>
 <section id="view-home" class="view space-y-5">
-  <div class="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 text-white p-5 md:p-7 shadow-xl overflow-hidden relative">
+  <div class="premium-hero rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 text-white p-5 md:p-8 shadow-xl overflow-hidden relative">
    <div class="relative z-10">
-    <p class="text-blue-200 text-xs font-bold tracking-widest uppercase">Il tuo riepilogo</p>
-    <h2 class="text-2xl md:text-3xl font-extrabold mt-2">Il prossimo turno</h2>
-    <p id="nextShiftLabel" class="text-blue-100 mt-1">Carica il PDF dei turni per visualizzare il riepilogo.</p>
+    <p class="text-blue-200 text-xs font-bold tracking-widest uppercase section-kicker">La tua area personale</p>
+    <h2 class="text-2xl md:text-3xl font-extrabold mt-2">Organizza il tuo lavoro. Semplicemente.</h2>
+    <p id="nextShiftLabel" class="text-blue-100/90 mt-2 max-w-2xl leading-relaxed">Carica il prospetto mensile per visualizzare il prossimo turno, consultare il calendario e tenere il tuo archivio sempre aggiornato.</p>
     <div class="mt-5 flex flex-wrap gap-3 items-center">
      <div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">PROSSIMO TURNO</p><p id="nextShiftCode" class="text-3xl font-black mt-1">—</p></div>
      <div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">DATA</p><p id="nextShiftDate" class="text-lg font-bold mt-1">—</p></div>
@@ -1009,8 +1025,21 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
 
 <script>
 (()=>{
- const CFG='gestionale-turni-cloud-config-v1', ARCH='gestionale-turni-archive-v1', PROF='gestionale-turni-user-profile-v1';
+ const CFG='gestionale-turni-cloud-config-v1', ARCH='gestionale-turni-archive-v1', PROF='gestionale-turni-user-profile-v1', OWNER='gestionale-turni-cloud-owner-v1';
  let client=null, currentUser=null;
+ // Separa gli archivi locali quando più persone usano lo stesso dispositivo.
+ // Il primo account può adottare i dati locali già presenti; gli account successivi partono dal proprio cloud.
+ function scopeLocalDataToUser(user){
+  if(!user?.id)return;
+  const owner=localStorage.getItem(OWNER);
+  if(owner && owner!==user.id){
+   localStorage.removeItem(ARCH);localStorage.removeItem(PROF);localStorage.removeItem('turni-preferred-employee');
+   if(typeof dataset!=='undefined' && dataset){dataset={employees:[],days:[],monthLabel:'',year:null,monthIndex:null};}
+   if(typeof refreshArchiveSelect==='function')refreshArchiveSelect();
+   if(typeof syncProfileUI==='function')syncProfileUI();
+  }
+  localStorage.setItem(OWNER,user.id);
+ }
  const $=id=>document.getElementById(id);
  const msg=t=>{if($('cloudMessage'))$('cloudMessage').textContent=t};
  const state=t=>{if($('cloudState'))$('cloudState').textContent=t};
@@ -1022,11 +1051,11 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
  async function saveCloud(){if(!client||!currentUser)throw Error('Accedi prima al tuo account cloud.');const payload=localPayload();const {error}=await client.from('turni_cloud_data').upsert({user_id:currentUser.id,payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;}
  async function loadCloud(){if(!client||!currentUser)throw Error('Accedi prima al tuo account cloud.');const {data,error}=await client.from('turni_cloud_data').select('payload').eq('user_id',currentUser.id).maybeSingle();if(error)throw error;if(!data?.payload)return false;const merged=mergePayload(localPayload(),data.payload);localStorage.setItem(ARCH,JSON.stringify(merged.archive));localStorage.setItem(PROF,JSON.stringify(merged.profile||{}));if(merged.preferredEmployee)localStorage.setItem('turni-preferred-employee',merged.preferredEmployee);if(typeof refreshArchiveSelect==='function')refreshArchiveSelect();if(typeof syncProfileUI==='function')syncProfileUI();if(typeof restoreLatestArchiveOnStart==='function')restoreLatestArchiveOnStart();return true;}
  async function sync(){try{if(!currentUser)throw Error('Effettua prima l’accesso.');await loadCloud();await saveCloud();state('Sincronizzato');msg('Sincronizzazione completata. Profilo e archivio turni sono aggiornati su questo dispositivo e nel cloud.');}catch(e){msg('Errore sincronizzazione: '+(e.message||e));state('Errore');}}
- async function refreshSession(){if(!client)return;const {data}=await client.auth.getSession();currentUser=data.session?.user||null;if(currentUser){state('Connesso: '+currentUser.email);$('cloudLogout').disabled=false;}else{state('Non connesso');}}
+ async function refreshSession(){if(!client)return;try{state('Controllo accesso…');const {data,error}=await client.auth.getSession();if(error)throw error;currentUser=data.session?.user||null;if(currentUser){scopeLocalDataToUser(currentUser);$('cloudLogout').disabled=false;state('Accesso ripristinato');msg('Accesso riconosciuto. Carico automaticamente il tuo archivio cloud…');await loadCloud();await saveCloud();state('Sincronizzato');msg('Archivio cloud caricato automaticamente. Profilo e turni sono aggiornati.');}else{state('Non connesso');msg('Per caricare automaticamente i turni su questo dispositivo, accedi una volta al tuo account cloud.');}}catch(e){state('Connessione non riuscita');msg('Non riesco a recuperare il cloud in questo momento: i dati locali restano disponibili. Dettaglio: '+(e.message||e));}}
  $('saveCloudConfig')?.addEventListener('click',setConfig);
- $('cloudRegister')?.addEventListener('click',async()=>{try{if(!client&&!initClient())throw Error('Configura prima URL e chiave Supabase.');const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||password.length<8)throw Error('Inserisci email e password di almeno 8 caratteri.');const {data,error}=await client.auth.signUp({email,password});if(error)throw error;currentUser=data.user;if(data.session){state('Account creato');await sync()}else msg('Account creato. Controlla la posta e conferma l’indirizzo email, poi accedi.');}catch(e){msg(e.message||String(e));}});
- $('cloudLogin')?.addEventListener('click',async()=>{try{if(!client&&!initClient())throw Error('Configura prima URL e chiave Supabase.');const {data,error}=await client.auth.signInWithPassword({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value});if(error)throw error;currentUser=data.user;state('Connesso: '+currentUser.email);msg('Accesso effettuato. Recupero i dati cloud…');await sync();}catch(e){msg(e.message||String(e));}});
- $('cloudLogout')?.addEventListener('click',async()=>{try{if(client)await client.auth.signOut();currentUser=null;state('Disconnesso');msg('Sei uscito dall’account. I dati locali restano disponibili su questo dispositivo.');}catch(e){msg(e.message||String(e));}});
+ $('cloudRegister')?.addEventListener('click',async()=>{try{if(!client&&!initClient())throw Error('Configura prima URL e chiave Supabase.');const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||password.length<8)throw Error('Inserisci email e password di almeno 8 caratteri.');const {data,error}=await client.auth.signUp({email,password});if(error)throw error;currentUser=data.user;if(data.session){scopeLocalDataToUser(currentUser);state('Account creato');await sync()}else msg('Account creato. Controlla la posta e conferma l’indirizzo email, poi accedi.');}catch(e){msg(e.message||String(e));}});
+ $('cloudLogin')?.addEventListener('click',async()=>{try{if(!client&&!initClient())throw Error('Configura prima URL e chiave Supabase.');const {data,error}=await client.auth.signInWithPassword({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value});if(error)throw error;currentUser=data.user;scopeLocalDataToUser(currentUser);state('Connesso: '+currentUser.email);msg('Accesso effettuato. Recupero i dati cloud…');await sync();}catch(e){msg(e.message||String(e));}});
+ $('cloudLogout')?.addEventListener('click',async()=>{try{if(client)await client.auth.signOut();currentUser=null;state('Disconnesso');msg('Sei uscito dall’account. I dati restano salvati su questo dispositivo e saranno separati da quelli di eventuali altri account.');}catch(e){msg(e.message||String(e));}});
  $('cloudSyncNow')?.addEventListener('click',sync);
  const c=getConfig();if(c.url)$('cloudUrl').value=c.url;if(c.key)$('cloudAnon').value=c.key;if(initClient())refreshSession();
 })();
