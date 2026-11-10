@@ -126,3 +126,10 @@ VERSIONE 16 - AREA AMMINISTRATORE E INTERFACCIA MIGLIORATA
 - Aggiunti indicatori del ruolo, area accesso personale e nota privacy.
 - Migliorate gerarchie visive e presentazione della dashboard.
 Nota tecnica: URL e chiave publishable Supabase non sono segreti; la protezione reale dei dati è affidata alle policy RLS nel database. Non inserire mai la service_role key nel browser.
+
+VERSIONE 17 - LETTORE PDF ROBUSTO
+- Rilevamento del numero di colonne giorno dall'intestazione reale del prospetto, senza presumere sempre 28/30/31.
+- Supporto ai codici turno osservati nei PDF di prova: Hxx, Fxx, R1, R2, RZ, FER, FEST, TRN, OFF e altri già previsti.
+- Supporto alle pagine successive che contengono soltanto le righe dipendenti residue.
+- Segnalazione esplicita quando il PDF contiene meno giorni del mese civile: non vengono inventati turni mancanti.
+- Verifica strutturale delle righe importate.
