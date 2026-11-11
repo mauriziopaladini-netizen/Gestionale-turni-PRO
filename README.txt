@@ -140,3 +140,19 @@ VERSIONE 18 - ARCHIVIO PDF IMMEDIATO
 - Nuovo archivio locale con elenco, apertura e cancellazione dei PDF.
 - Se la lettura automatica fallisce, il documento resta disponibile nell'archivio.
 - Approccio orientato al documento originale e al calendario personale.
+
+VERSIONE 19 - REVISIONE FUNZIONALE
+- Corretto il collegamento tra mese archiviato e PDF originale: l'archivio del mese conserva la chiave IndexedDB del PDF effettivo.
+- Il ripristino automatico e il caricamento di un mese riaprono il PDF corretto anche se l'archivio documenti contiene più file.
+- La cancellazione del mese elimina il PDF associato senza lasciare il collegamento incoerente.
+- Riconoscimento del numero di giorni effettivamente stampati nell'intestazione del prospetto; fallback sui giorni civili se l'intestazione non è rilevata.
+- Parsing fallback delle righe con 20-31 codici turno, utile per prospetti parziali.
+- Chiarito che i PDF sono conservati localmente e non fanno parte della sincronizzazione cloud.
+
+VERSIONE 20 - IMPORTAZIONE PERSONALE GUIDATA
+- Quando l'estrazione automatica non riconosce le righe, appare una procedura semplice per creare il solo calendario personale.
+- Mese e anno vengono precompilati quando rilevabili dal PDF o dal nome file.
+- L'utente inserisce nominativo e un codice per ogni giorno; il sistema controlla il numero di giorni (anche per prospetti parziali) e i codici.
+- Il calendario personale viene salvato nell'archivio locale e nel profilo selezionato.
+- Il PDF originale resta conservato nell'archivio documenti.
+Nota: il fallback manuale è per mesi completi; prospetti parziali richiedono ancora una lettura automatica corretta.

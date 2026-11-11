@@ -176,12 +176,26 @@ body.theme-dark .shift-other{background:#334155;color:#e2e8f0}
   <div class="bg-white rounded-2xl p-5 shadow-sm border border-blue-100">
    <div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-bold text-lg">📚 Archivio documenti salvati</h3><p class="text-sm text-slate-500">I PDF vengono conservati subito sul dispositivo, anche se la lettura automatica non riesce.</p></div><span id="pdfVaultCount" class="rounded-full bg-blue-50 text-blue-800 px-3 py-1 text-xs font-bold">0 PDF</span></div>
    <div id="pdfVaultList" class="mt-3 space-y-2"><p class="text-sm text-slate-500">Nessun PDF salvato.</p></div>
-   <p class="text-xs text-slate-400 mt-3">Archivio locale del dispositivo. Conserva anche una copia dei PDF originali sul PC o su un supporto esterno.</p>
+   <p class="text-xs text-slate-400 mt-3">Archivio locale di questo dispositivo: i PDF originali non vengono caricati nel cloud. Conserva anche una copia esterna.</p>
   </div>
   <div class="bg-white rounded-2xl p-5 shadow-sm">
    <h3 class="font-bold text-lg">Controllo prima dell'uso</h3>
    <p class="text-sm text-slate-600 mt-1">Dopo l'importazione controlla il tabellone. Il sistema segnala le righe con un numero di turni diverso dai giorni del mese; non corregge automaticamente eventuali errori del PDF.</p>
    <div id="warnings" class="mt-3 text-sm text-slate-600">Carica un PDF per iniziare.</div>
+   <section id="manualPersonalImport" class="hidden mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+    <div><h3 class="font-bold text-base">Importazione personale guidata</h3><p class="text-sm text-slate-700 mt-1">Il PDF è stato conservato, ma il lettore non ha ricostruito le righe. Puoi inserire soltanto i tuoi turni, senza compilare tutto il tabellone.</p></div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+     <label class="text-sm font-semibold">Mese<select id="manualMonth" class="mt-1 w-full border rounded-lg px-3 py-2"></select></label>
+     <label class="text-sm font-semibold">Anno<input id="manualYear" type="number" min="2020" max="2100" class="mt-1 w-full border rounded-lg px-3 py-2" value="2026"></label>
+     <label class="text-sm font-semibold col-span-2 md:col-span-1">Cognome e nome<input id="manualName" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="PALADINI MAURIZIO"></label>
+    </div>
+    <label class="block text-sm font-semibold">Turni dal giorno 1 in poi
+     <textarea id="manualShifts" rows="3" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono text-sm" placeholder="H16, H16, R1, H14, FER, ..."></textarea>
+    </label>
+    <p class="text-xs text-slate-600">Inserisci un codice per ogni giorno, separato da virgola o spazio. Codici riconosciuti: Hxx, Fxx, R1, R2, RZ, FER, TRN, OFF, 81, 82, M10. Verifica la sequenza sul PDF prima di confermare.</p>
+    <div class="flex flex-wrap gap-2"><button id="applyManualPersonal" type="button" class="rounded-lg bg-blue-700 text-white px-4 py-2 font-semibold">Crea il mio calendario</button><button id="cancelManualPersonal" type="button" class="rounded-lg border px-4 py-2">Chiudi</button></div>
+    <p id="manualImportMessage" class="text-sm" role="status"></p>
+   </section>
     <div id="validationPanel" class="mt-4 rounded-xl border border-slate-200 p-3">
      <div class="flex flex-wrap items-center justify-between gap-2">
       <div><h4 class="font-bold">Confronto automatico PDF / turni importati</h4><p class="text-xs text-slate-500">Verifica numero di codici, nominativi duplicati, codici non riconosciuti e corrispondenza con la riga originale estratta.</p></div>
@@ -334,7 +348,7 @@ const MONTH_NAMES=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Lugl
 const WEEKDAYS=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
 const SHIFT_RE=/^(?:H\d{2}|R1|R2|RZ|FER|TRN|OFF|81|82|M10|\d{1,2}|\*{3})$/i;
 let dataset={monthIndex:null,year:null,monthLabel:'',days:[],employees:[],rawText:'',modifications:{}};
- let originalPdfUrl=null,activePdfBytes=null,activePdfObjectUrl=null,compareSelectedIds=new Set(),compareDiffOnly=false;
+ let originalPdfUrl=null,activePdfBytes=null,activePdfObjectUrl=null,activePdfVaultKey=null,compareSelectedIds=new Set(),compareDiffOnly=false;
 let selectedIds=new Set(), onlySelected=false;
 let displayMode='code';
 const SHIFT_HOURS=8;
@@ -359,6 +373,8 @@ document.getElementById('themeToggle').addEventListener('click',()=>{
 });
 try{if(localStorage.getItem('turni-theme')==='dark'){document.body.classList.add('theme-dark');document.getElementById('themeToggle').textContent='☀️ Tema chiaro'}}catch(e){}
 document.getElementById('pdfFile').addEventListener('change',handlePDFUpload); renderPdfVault();
+ document.getElementById('applyManualPersonal').addEventListener('click',applyManualPersonalImport);
+ document.getElementById('cancelManualPersonal').addEventListener('click',()=>document.getElementById('manualPersonalImport').classList.add('hidden'));
 document.getElementById('runValidation').addEventListener('click',validateImportedData);
  document.getElementById('compareMine').addEventListener('change',populateComparePeople);
  document.getElementById('comparePeople').addEventListener('change',ev=>{if(ev.target.matches('input[type=checkbox]')){ev.target.checked?compareSelectedIds.add(ev.target.value):compareSelectedIds.delete(ev.target.value);renderCompare();}});
@@ -451,7 +467,7 @@ const ARCHIVE_KEY='gestionale-turni-archive-v1';
   if(!item||!item.dataset)return;
   dataset={...item.dataset,modifications:item.dataset.modifications||{}};
   document.getElementById('fileName').textContent=item.fileName||('Archivio '+key);
-  activePdfBytes=null;showArchivedPdf(key);
+  activePdfBytes=null;activePdfVaultKey=item.pdfKey||key;showArchivedPdf(item.pdfKey||key);
   document.getElementById('rawText').textContent=dataset.rawText||'';
   document.getElementById('statEmployees').textContent=dataset.employees.length;
   document.getElementById('statDays').textContent=dataset.days.length;
@@ -503,14 +519,14 @@ function saveCurrentMonth(showMessage=true){
  const key=archiveKeyFor();
  if(!key){if(showMessage)showStatus('Non posso archiviare il mese perché mese o anno non sono stati riconosciuti.','error');return false}
  const archive=readArchive();
- archive[key]={savedAt:new Date().toISOString(),fileName:document.getElementById('fileName').textContent||'',dataset:{
+ archive[key]={savedAt:new Date().toISOString(),fileName:document.getElementById('fileName').textContent||'',pdfKey:activePdfVaultKey||key,dataset:{
   monthIndex:dataset.monthIndex,year:dataset.year,monthLabel:dataset.monthLabel,
   days:dataset.days,employees:dataset.employees,rawText:dataset.rawText||'',modifications:dataset.modifications||{}
  }};
  if(!writeArchive(archive))return false;
  refreshArchiveSelect(key);
  if(activePdfBytes)saveArchivedPdf(key,activePdfBytes,document.getElementById('fileName').textContent||'prospetto.pdf');
- if(showMessage)showStatus('Mese '+archive[key].dataset.monthLabel+' salvato nell’archivio del browser. Esporta periodicamente un backup per sicurezza.','success');
+ if(showMessage)showStatus('Mese '+archive[key].dataset.monthLabel+' salvato sul dispositivo. Il PDF originale resta nell’archivio documenti. Esporta periodicamente un backup.','success');
  return true;
 }
 function loadSelectedArchiveMonth(){
@@ -519,7 +535,7 @@ function loadSelectedArchiveMonth(){
  const preferred=(()=>{try{return localStorage.getItem('turni-preferred-employee')||''}catch(e){return ''}})();
  dataset={...item.dataset,modifications:item.dataset.modifications||{}};
  document.getElementById('fileName').textContent=item.fileName||('Archivio '+key);
- activePdfBytes=null;showArchivedPdf(key);
+ activePdfBytes=null;activePdfVaultKey=item.pdfKey||key;showArchivedPdf(item.pdfKey||key);
  document.getElementById('rawText').textContent=dataset.rawText||'';
  document.getElementById('statEmployees').textContent=dataset.employees.length;
  document.getElementById('statDays').textContent=dataset.days.length;
@@ -538,8 +554,8 @@ function deleteSelectedArchiveMonth(){
  const sel=document.getElementById('archiveMonthSelect'),key=sel.value;
  if(!key){showStatus('Seleziona prima un mese da eliminare.','error');return}
  if(!confirm('Eliminare il mese '+archiveLabel(key,readArchive()[key])+' dall’archivio locale? Questa azione non si può annullare senza un backup.'))return;
- const archive=readArchive();delete archive[key];
- if(writeArchive(archive)){deleteArchivedPdf(key);refreshArchiveSelect();syncProfileUI();showStatus('Mese eliminato dall’archivio locale.','success')}
+ const archive=readArchive(),item=archive[key];delete archive[key];
+ if(writeArchive(archive)){deleteArchivedPdf(item?.pdfKey||key);if(item?.pdfKey&&item.pdfKey!==key)deleteArchivedPdf(key);refreshArchiveSelect();syncProfileUI();showStatus('Mese eliminato dall’archivio locale.','success')}
 }
 function downloadBlob(content,type,name){
  const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -580,6 +596,7 @@ async function handlePDFUpload(event){
   const bytes=new Uint8Array(await file.arrayBuffer());
   activePdfBytes=bytes;
   const vaultKey='inbox:'+Date.now()+':'+Math.random().toString(36).slice(2,8);
+  activePdfVaultKey=vaultKey;
   await saveArchivedPdf(vaultKey,bytes,file.name);
   await renderPdfVault();
   showStatus('PDF originale salvato nell’archivio del dispositivo. Ora provo a leggere i turni…','success');
@@ -639,7 +656,7 @@ function parseEmployeeLine(line,expectedDays){
  if(shiftStart<0){
   for(let i=2;i<tokens.length;i++){
    const tail=tokens.slice(i);
-   if(tail.length>=28 && tail.length<=31 && tail.every(t=>SHIFT_RE.test(t))){shiftStart=i;break;}
+   if(tail.length>=20 && tail.length<=31 && tail.every(t=>SHIFT_RE.test(t))){shiftStart=i;break;}
   }
  }
  if(shiftStart<0)return null;
@@ -659,8 +676,12 @@ function parseEmployeeLine(line,expectedDays){
 }
 function parseSchedule(text,filename){
  const date=detectMonthYear(text,filename);
- const expectedDays=date.monthIndex!==null&&date.year?new Date(date.year,date.monthIndex+1,0).getDate():null;
  const lines=text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+ const calendarDays=date.monthIndex!==null&&date.year?new Date(date.year,date.monthIndex+1,0).getDate():null;
+ // Use the actual day-number columns printed in the PDF (some rosters show a partial month).
+ const dayHeader=lines.find(line=>/\b1\s+2\s+3\s+4\b/.test(line));
+ const headerDays=dayHeader?(dayHeader.match(/(?:^|\s)(?:[1-9]|[12]\d|3[01])(?=\s|$)/g)||[]).length:0;
+ const expectedDays=headerDays>=20&&headerDays<=31?headerDays:calendarDays;
  const employees=[];
  for(const line of lines){
   const emp=parseEmployeeLine(line,expectedDays);
@@ -670,9 +691,14 @@ function parseSchedule(text,filename){
  const unique=[], seen=new Set();
  for(const e of employees){const k=e.id;if(!seen.has(k)){seen.add(k);unique.push(e)}}
  if(!unique.length){
-  showStatus('Non ho riconosciuto righe dipendente. Questo PDF potrebbe avere una struttura diversa o essere una scansione. Apri “Testo estratto” per verificare.', 'error');
+  showStatus('Il PDF originale è conservato. La struttura non è stata riconosciuta automaticamente: puoi creare il tuo calendario con l’importazione personale guidata.', 'error');
+  const manual=document.getElementById('manualPersonalImport');if(manual)manual.classList.remove('hidden');
+  const detected=detectMonthYear(text,document.getElementById('fileName').textContent||'');
+  const month=document.getElementById('manualMonth');if(month){month.innerHTML=MONTH_NAMES.map((name,i)=>`<option value="${i}">${name}</option>`).join('');if(detected.monthIndex!==null)month.value=String(detected.monthIndex);}
+  const year=document.getElementById('manualYear');if(year&&detected.year)year.value=detected.year;
   dataset.employees=[];renderMatrix();return;
  }
+ const manual=document.getElementById('manualPersonalImport');if(manual)manual.classList.add('hidden');
  const maxDays=expectedDays||Math.max(...unique.map(e=>e.shifts.length));
  dataset={...dataset,monthIndex:date.monthIndex,year:date.year,monthLabel:date.monthIndex!==null?(MONTH_NAMES[date.monthIndex]+(date.year?' '+date.year:'')):'Mese non identificato',days:Array.from({length:maxDays},(_,i)=>i+1),employees:unique,modifications:{}};
  selectedIds.clear();onlySelected=false;
@@ -698,6 +724,36 @@ function parseSchedule(text,filename){
  setView('matrix');
 }
 
+function applyManualPersonalImport(){
+ const monthIndex=Number(document.getElementById('manualMonth').value),year=Number(document.getElementById('manualYear').value);
+ const fullName=document.getElementById('manualName').value.trim().replace(/\s+/g,' ');
+ const raw=document.getElementById('manualShifts').value.trim();
+ const message=document.getElementById('manualImportMessage');
+ const parts=raw.split(/[\s,;|]+/).map(s=>s.trim().toUpperCase()).filter(Boolean);
+ const valid=/^(?:H\d{2}|F\d{2}|R1|R2|RZ|FER|FEST|TRN|OFF|81|82|M10|\d{1,2}|\*{3})$/;
+ if(!fullName||fullName.split(' ').length<2){message.textContent='Inserisci cognome e nome.';return}
+ if(!Number.isInteger(monthIndex)||monthIndex<0||monthIndex>11||!Number.isInteger(year)||year<2020||year>2100){message.textContent='Controlla mese e anno.';return}
+ const totalDays=new Date(year,monthIndex+1,0).getDate();
+ if(parts.length<1||parts.length>totalDays){message.textContent='Hai inserito '+parts.length+' codici: il numero deve essere compreso tra 1 e '+totalDays+' giorni.';return}
+ const invalid=parts.filter(code=>!valid.test(code));
+ if(invalid.length){message.textContent='Codici non riconosciuti: '+[...new Set(invalid)].join(', ');return}
+ const names=fullName.split(' '),nome=names.pop(),cognome=names.join(' ');
+ const id=fullName.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/gi,'_').toUpperCase();
+ dataset={...dataset,monthIndex,year,monthLabel:MONTH_NAMES[monthIndex]+' '+year,days:Array.from({length:parts.length},(_,i)=>i+1),employees:[{id,cognome,nome,shifts:parts,sourceLine:'Inserimento personale guidato'}],modifications:{}};
+ selectedIds.clear();onlySelected=false;
+ ['statEmployees','statDays','statMonth'].forEach((id,i)=>document.getElementById(id).textContent=[1,parts.length,dataset.monthLabel][i]);
+ document.getElementById('matrixSubtitle').textContent=dataset.monthLabel+' · 1 dipendente';
+ document.getElementById('calendarSubtitle').textContent=dataset.monthLabel;
+ document.getElementById('warnings').textContent='Calendario personale creato tramite inserimento guidato: '+parts.length+' giorni registrati. Verifica ogni codice sul PDF originale.';
+ populateEmployeeSelect();
+ ['employeeSelect','myEmployeeSelect','profileEmployee'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='profileEmployee'?dataset.employees[0].id:dataset.employees[0].id;});
+ saveUserProfile(id);
+ renderMatrix();renderCalendar();renderNextShift();renderPersonalSummary();
+ document.getElementById('manualPersonalImport').classList.add('hidden');
+ saveCurrentMonth(false);
+ setView('calendar');
+ showStatus('Calendario personale creato e salvato sul dispositivo. Controlla i turni confrontandoli con il PDF.','success');
+}
 function validateImportedData(){
  const summary=document.getElementById('validationSummary');
  const details=document.getElementById('validationDetails');
