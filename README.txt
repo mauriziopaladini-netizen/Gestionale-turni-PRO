@@ -133,3 +133,10 @@ VERSIONE 17 - LETTORE PDF ROBUSTO
 - Supporto alle pagine successive che contengono soltanto le righe dipendenti residue.
 - Segnalazione esplicita quando il PDF contiene meno giorni del mese civile: non vengono inventati turni mancanti.
 - Verifica strutturale delle righe importate.
+
+VERSIONE 18 - ARCHIVIO PDF IMMEDIATO
+- Il PDF originale viene salvato in IndexedDB appena selezionato, prima dell'estrazione del testo.
+- Il salvataggio non dipende dal riconoscimento dei turni o dall'archiviazione del mese.
+- Nuovo archivio locale con elenco, apertura e cancellazione dei PDF.
+- Se la lettura automatica fallisce, il documento resta disponibile nell'archivio.
+- Approccio orientato al documento originale e al calendario personale.
