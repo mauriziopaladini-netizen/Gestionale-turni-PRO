@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Gestionale Turni PRO</title>
-<link rel="manifest" href="./manifest.webmanifest">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#0f172a" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<title>Gestionale Turni PRO | La tua agenda operativa</title>
+<link href="./manifest.webmanifest" rel="manifest"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,264 +81,262 @@ body.theme-dark .shift-other{background:#334155;color:#e2e8f0}
 </head>
 <body class="min-h-screen text-slate-800">
 <header class="bg-blue-700 text-white shadow-lg">
- <div class="max-w-screen-2xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
-  <div><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-2xl shadow-inner">◷</div><div><h1 class="text-xl md:text-2xl font-extrabold">Gestionale Turni <span class="text-sky-300">PRO</span></h1><p class="text-blue-100/80 text-xs md:text-sm tracking-wide">La tua agenda di lavoro, in un unico posto</p></div></div></div>
-  <button id="themeToggle" class="no-print rounded-xl border border-blue-400 bg-blue-800 hover:bg-blue-900 px-3 py-2 text-sm font-semibold" aria-label="Cambia tema">🌙 Tema scuro</button>
-  <div class="flex gap-2 no-print">
-   <button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="home">Home</button>
-   <button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="matrix">Tabellone</button>
-   <button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="calendar">Calendario</button><button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="compare">Confronta</button><button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="split">PDF + tabella</button>
-  </div>
- </div>
+<div class="max-w-screen-2xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+<div><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-2xl shadow-inner">◷</div><div><h1 class="text-xl md:text-2xl font-extrabold">Gestionale Turni <span class="text-sky-300">PRO</span></h1><p class="text-blue-100/80 text-xs md:text-sm tracking-wide">La tua agenda di lavoro, in un unico posto</p></div></div></div>
+<button aria-label="Cambia tema" class="no-print rounded-xl border border-blue-400 bg-blue-800 hover:bg-blue-900 px-3 py-2 text-sm font-semibold" id="themeToggle">🌙 Tema scuro</button>
+<div class="flex gap-2 no-print">
+<button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="home">Home</button>
+<button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="matrix">Tabellone</button>
+<button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="calendar">Calendario</button><button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="compare">Confronta</button><button class="navbtn rounded-lg bg-blue-800 px-3 py-2" data-view="split">PDF + tabella</button>
+</div>
+</div>
 </header>
 <main class="max-w-screen-2xl mx-auto p-3 md:p-6 space-y-5">
- 
-  <section id="personalProfileCard" class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-blue-100 space-y-3">
-   <div class="flex flex-wrap items-center justify-between gap-3">
-    <div><div class="text-xs uppercase tracking-wide text-blue-600 font-bold">Area personale</div><h2 class="text-xl font-extrabold">Il mio profilo turni</h2><p class="text-sm text-slate-500">Il tuo nominativo viene salvato su questo dispositivo. I mesi già importati restano disponibili senza ricaricare il PDF.</p></div>
-    <span id="profileStatus" class="text-xs rounded-full bg-slate-100 px-3 py-1">Profilo non configurato</span>
-   </div>
-   <div class="grid md:grid-cols-3 gap-3 items-end">
-    <label class="text-sm font-semibold md:col-span-2">Seleziona il tuo nominativo
-     <select id="profileEmployee" class="mt-1 block w-full border rounded-lg px-3 py-2"><option value="">Importa un primo PDF per scegliere il nominativo</option></select>
-    </label>
-    <button id="saveProfile" class="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-semibold">Salva il mio profilo</button>
-   </div>
-   <div class="flex flex-wrap gap-2 text-sm">
-    <button id="openMyCalendar" class="rounded-lg border px-3 py-2">Apri il mio calendario</button>
-    <button id="openMyCompare" class="rounded-lg border px-3 py-2">Confronta con colleghi</button>
-    <button id="loadLatestMonth" class="rounded-lg border px-3 py-2">Carica ultimo mese archiviato</button>
-   </div>
-   <p id="profileArchiveInfo" class="text-xs text-slate-500">I dati sono conservati nel browser di questo dispositivo. Per trasferirli su un altro dispositivo usa Backup / Ripristino.</p>
-  </section>
-<section id="cloudSyncCard" class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-emerald-100 space-y-3">
- <div class="flex flex-wrap items-center justify-between gap-2"><div><div class="text-xs uppercase tracking-wide text-emerald-700 font-bold">Sincronizzazione online</div><h2 class="text-xl font-extrabold">Il tuo archivio cloud</h2><p class="text-sm text-slate-500">Accedi con il tuo account per sincronizzare profilo e turni tra dispositivi.</p></div><span id="cloudState" class="text-xs rounded-full bg-slate-100 px-3 py-1">Non configurata</span></div>
- <details id="adminCloudConfig" class="rounded-xl border p-3" hidden><summary class="font-semibold cursor-pointer flex items-center gap-2">⚙️ Configurazione Cloud — Area amministratore <span class="ml-auto text-[10px] uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-1 rounded-full">Admin</span></summary><p class="text-xs text-slate-500 mt-2">Inserisci l'URL del tuo progetto Supabase e la chiave anon/public. Non inserire mai la service_role key.</p>
-  <div class="grid md:grid-cols-2 gap-2 mt-2"><label class="text-sm">URL progetto<input id="cloudUrl" type="url" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="https://xxxx.supabase.co"></label><label class="text-sm">Chiave anon/public<input id="cloudAnon" type="password" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="eyJ..."></label></div><button id="saveCloudConfig" class="mt-2 rounded-lg bg-slate-800 text-white px-4 py-2 text-sm font-semibold">Salva configurazione</button>
- </details>
- <div class="rounded-xl bg-slate-50 border border-slate-200 p-3"><div class="flex items-center gap-2 mb-2"><span>🔐</span><span class="font-semibold text-sm">Accesso personale</span><span id="accountRole" class="ml-auto text-[10px] uppercase tracking-wider rounded-full bg-slate-200 px-2 py-1 text-slate-600">Dipendente</span></div><div class="grid md:grid-cols-2 gap-2"><label class="text-sm">Email<input id="cloudEmail" type="email" autocomplete="username" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="La tua email"></label><label class="text-sm">Password<input id="cloudPassword" type="password" autocomplete="current-password" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="Password account cloud"></label></div></div>
- <div class="flex flex-wrap gap-2"><button id="cloudRegister" class="rounded-lg border px-3 py-2 text-sm font-semibold">Crea account</button><button id="cloudLogin" class="rounded-lg bg-emerald-600 text-white px-3 py-2 text-sm font-semibold">Accedi</button><button id="cloudLogout" class="rounded-lg border px-3 py-2 text-sm">Esci</button><button id="cloudSyncNow" class="rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-semibold">Sincronizza adesso</button></div>
- <p class="text-xs text-slate-500 flex items-start gap-2"><span>🛡️</span><span>I tuoi dati sono privati: ogni account accede soltanto al proprio archivio. La configurazione amministrativa non viene mostrata agli account dipendente.</span></p>
- <p id="cloudMessage" class="text-sm text-slate-600" aria-live="polite">Per attivare la sincronizzazione devi prima creare il progetto Supabase e applicare lo script SQL incluso nello ZIP.</p>
- <p class="text-xs text-slate-500">La sincronizzazione comprende profilo e dati dei mesi. I PDF originali restano sul dispositivo in questa versione: per sincronizzare anche i PDF servirà attivare lo spazio file cloud.</p>
+
+
+<section class="view space-y-5" id="view-home">
+<div class="premium-hero rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 text-white p-5 md:p-8 shadow-xl overflow-hidden relative">
+<div class="relative z-10">
+<p class="text-blue-200 text-xs font-bold tracking-widest uppercase section-kicker">La tua area personale</p>
+<h2 class="text-2xl md:text-3xl font-extrabold mt-2">Organizza il tuo lavoro. Semplicemente.</h2>
+<p class="text-blue-100/90 mt-2 max-w-2xl leading-relaxed" id="nextShiftLabel">Carica il prospetto mensile per visualizzare il prossimo turno, consultare il calendario e tenere il tuo archivio sempre aggiornato.</p>
+<div class="mt-5 flex flex-wrap gap-3 items-center">
+<div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">PROSSIMO TURNO</p><p class="text-3xl font-black mt-1" id="nextShiftCode">—</p></div>
+<div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">DATA</p><p class="text-lg font-bold mt-1" id="nextShiftDate">—</p></div>
+<div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">ORARIO</p><p class="text-lg font-bold mt-1" id="nextShiftTime">—</p></div>
+</div>
+</div>
+<div class="absolute -right-10 -bottom-16 opacity-10 text-[180px] select-none">◷</div>
+</div>
+<div class="flex items-center gap-2 pt-1"><span class="h-px flex-1 bg-slate-200"></span><span class="text-[10px] font-extrabold uppercase tracking-[.18em] text-slate-400">Accesso rapido</span><span class="h-px flex-1 bg-slate-200"></span></div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 no-print">
+<button class="app-card p-4 text-left hover:border-blue-400 transition" data-go="calendar"><span class="text-2xl">📅</span><span class="block font-bold mt-2">I miei turni</span><span class="block text-xs text-slate-500 mt-1">Calendario personale</span></button>
+<button class="app-card p-4 text-left hover:border-blue-400 transition" data-go="matrix"><span class="text-2xl">📊</span><span class="block font-bold mt-2">Tabellone</span><span class="block text-xs text-slate-500 mt-1">Tutti i dipendenti</span></button>
+<button class="app-card p-4 text-left hover:border-blue-400 transition" id="quickImport"><span class="text-2xl">📄</span><span class="block font-bold mt-2">Importa PDF</span><span class="block text-xs text-slate-500 mt-1">Carica un nuovo mese</span></button>
+<button class="app-card p-4 text-left hover:border-blue-400 transition" data-go="calendar"><span class="text-2xl">🗓️</span><span class="block font-bold mt-2">Esporta calendario</span><span class="block text-xs text-slate-500 mt-1">Google e app compatibili</span></button>
+</div>
+<div class="bg-white rounded-2xl p-5 shadow-sm space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div><h2 class="text-xl font-bold">👤 Il mio profilo turni</h2><p class="text-sm text-slate-500">Scegli il tuo nominativo: la scelta verrà ricordata su questo dispositivo.</p></div>
+<label class="text-sm font-semibold">Il mio nominativo
+     <select class="border rounded-lg px-3 py-2 max-w-full" id="myEmployeeSelect"><option value="">Carica prima un PDF</option></select>
+</label>
+</div>
+<p class="text-sm text-slate-500" id="personalMonth">Nessun prospetto caricato.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Turni lavorativi</p><p class="text-2xl font-extrabold" id="personalWorkDays">—</p></div>
+<div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Ore programmate*</p><p class="text-2xl font-extrabold" id="personalHours">—</p></div>
+<div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Riposi (R1/R2/RZ)</p><p class="text-2xl font-extrabold" id="personalRestDays">—</p></div>
+<div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Ferie / OFF</p><p class="text-2xl font-extrabold" id="personalLeaveDays">—</p></div>
+</div>
+<p class="text-xs text-slate-500">*Stima basata su 8 ore per ogni codice H riconosciuto. È un riepilogo automatico: verifica sempre il prospetto originale.</p>
+</div>
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<h2 class="text-xl font-bold">I miei prospetti PDF</h2>
+<p class="mt-2 text-slate-600">Prima conserviamo il documento originale. Poi estraiamo soltanto la tua riga personale: niente importazioni forzate dell’intero tabellone.</p>
+<div class="mt-4 flex flex-wrap items-center gap-3">
+<label class="cursor-pointer rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 font-semibold" for="pdfFile">📄 Seleziona PDF</label>
+<input accept=".pdf,application/pdf" class="hidden" id="pdfFile" type="file"/>
+<span class="text-sm text-slate-500" id="fileName">Nessun file caricato</span>
+</div>
+<div class="mt-4 hidden rounded-xl p-3 text-sm" id="status" role="status"></div>
+<div class="mt-4 grid md:grid-cols-3 gap-3">
+<div class="rounded-xl bg-slate-50 border p-4"><div class="text-sm text-slate-500">Dipendenti letti</div><div class="text-2xl font-bold" id="statEmployees">—</div></div>
+<div class="rounded-xl bg-slate-50 border p-4"><div class="text-sm text-slate-500">Giorni individuati</div><div class="text-2xl font-bold" id="statDays">—</div></div>
+<div class="rounded-xl bg-slate-50 border p-4"><div class="text-sm text-slate-500">Mese del prospetto</div><div class="text-xl font-bold" id="statMonth">—</div></div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-blue-100">
+<div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-bold text-lg">📚 Archivio documenti salvati</h3><p class="text-sm text-slate-500">I PDF vengono conservati subito sul dispositivo, anche se la lettura automatica non riesce.</p></div><span class="rounded-full bg-blue-50 text-blue-800 px-3 py-1 text-xs font-bold" id="pdfVaultCount">0 PDF</span></div>
+<div class="mt-3 space-y-2" id="pdfVaultList"><p class="text-sm text-slate-500">Nessun PDF salvato.</p></div>
+<p class="text-xs text-slate-400 mt-3">Archivio locale di questo dispositivo: i PDF originali non vengono caricati nel cloud. Conserva anche una copia esterna.</p>
+</div>
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<h3 class="font-bold text-lg">Controllo prima dell'uso</h3>
+<p class="text-sm text-slate-600 mt-1">Dopo l'importazione controlla il tabellone. Il sistema segnala le righe con un numero di turni diverso dai giorni del mese; non corregge automaticamente eventuali errori del PDF.</p>
+<div class="mt-3 text-sm text-slate-600" id="warnings">Carica un PDF per iniziare.</div>
+<section class="hidden mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3" id="manualPersonalImport">
+<div><h3 class="font-bold text-base">Importazione personale guidata</h3><p class="text-sm text-slate-700 mt-1">Il PDF è stato conservato, ma il lettore non ha ricostruito le righe. Puoi inserire soltanto i tuoi turni, senza compilare tutto il tabellone.</p></div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+<label class="text-sm font-semibold">Mese<select class="mt-1 w-full border rounded-lg px-3 py-2" id="manualMonth"></select></label>
+<label class="text-sm font-semibold">Anno<input class="mt-1 w-full border rounded-lg px-3 py-2" id="manualYear" max="2100" min="2020" type="number" value="2026"/></label>
+<label class="text-sm font-semibold col-span-2 md:col-span-1">Cognome e nome<input class="mt-1 w-full border rounded-lg px-3 py-2" id="manualName" placeholder="PALADINI MAURIZIO"/></label>
+</div>
+<label class="block text-sm font-semibold">Turni dal giorno 1 in poi
+     <textarea class="mt-1 w-full border rounded-lg px-3 py-2 font-mono text-sm" id="manualShifts" placeholder="H16, H16, R1, H14, FER, ..." rows="3"></textarea>
+</label>
+<p class="text-xs text-slate-600">Inserisci un codice per ogni giorno, separato da virgola o spazio. Codici riconosciuti: Hxx, Fxx, R1, R2, RZ, FER, TRN, OFF, 81, 82, M10. Verifica la sequenza sul PDF prima di confermare.</p>
+<div class="flex flex-wrap gap-2"><button class="rounded-lg bg-blue-700 text-white px-4 py-2 font-semibold" id="applyManualPersonal" type="button">Crea il mio calendario</button><button class="rounded-lg border px-4 py-2" id="cancelManualPersonal" type="button">Chiudi</button></div>
+<p class="text-sm" id="manualImportMessage" role="status"></p>
 </section>
-<section id="view-home" class="view space-y-5">
-  <div class="premium-hero rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 text-white p-5 md:p-8 shadow-xl overflow-hidden relative">
-   <div class="relative z-10">
-    <p class="text-blue-200 text-xs font-bold tracking-widest uppercase section-kicker">La tua area personale</p>
-    <h2 class="text-2xl md:text-3xl font-extrabold mt-2">Organizza il tuo lavoro. Semplicemente.</h2>
-    <p id="nextShiftLabel" class="text-blue-100/90 mt-2 max-w-2xl leading-relaxed">Carica il prospetto mensile per visualizzare il prossimo turno, consultare il calendario e tenere il tuo archivio sempre aggiornato.</p>
-    <div class="mt-5 flex flex-wrap gap-3 items-center">
-     <div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">PROSSIMO TURNO</p><p id="nextShiftCode" class="text-3xl font-black mt-1">—</p></div>
-     <div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">DATA</p><p id="nextShiftDate" class="text-lg font-bold mt-1">—</p></div>
-     <div class="rounded-2xl bg-white/10 border border-white/10 p-4 min-w-32"><p class="text-blue-200 text-xs">ORARIO</p><p id="nextShiftTime" class="text-lg font-bold mt-1">—</p></div>
-    </div>
-   </div>
-   <div class="absolute -right-10 -bottom-16 opacity-10 text-[180px] select-none">◷</div>
-  </div>
-  <div class="flex items-center gap-2 pt-1"><span class="h-px flex-1 bg-slate-200"></span><span class="text-[10px] font-extrabold uppercase tracking-[.18em] text-slate-400">Accesso rapido</span><span class="h-px flex-1 bg-slate-200"></span></div>
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 no-print">
-   <button class="app-card p-4 text-left hover:border-blue-400 transition" data-go="calendar"><span class="text-2xl">📅</span><span class="block font-bold mt-2">I miei turni</span><span class="block text-xs text-slate-500 mt-1">Calendario personale</span></button>
-   <button class="app-card p-4 text-left hover:border-blue-400 transition" data-go="matrix"><span class="text-2xl">📊</span><span class="block font-bold mt-2">Tabellone</span><span class="block text-xs text-slate-500 mt-1">Tutti i dipendenti</span></button>
-   <button class="app-card p-4 text-left hover:border-blue-400 transition" id="quickImport"><span class="text-2xl">📄</span><span class="block font-bold mt-2">Importa PDF</span><span class="block text-xs text-slate-500 mt-1">Carica un nuovo mese</span></button>
-   <button class="app-card p-4 text-left hover:border-blue-400 transition" data-go="calendar"><span class="text-2xl">🗓️</span><span class="block font-bold mt-2">Esporta calendario</span><span class="block text-xs text-slate-500 mt-1">Google e app compatibili</span></button>
-  </div>
-  <div class="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-   <div class="flex flex-wrap items-center justify-between gap-3">
-    <div><h2 class="text-xl font-bold">👤 Il mio profilo turni</h2><p class="text-sm text-slate-500">Scegli il tuo nominativo: la scelta verrà ricordata su questo dispositivo.</p></div>
-    <label class="text-sm font-semibold">Il mio nominativo
-     <select id="myEmployeeSelect" class="border rounded-lg px-3 py-2 max-w-full"><option value="">Carica prima un PDF</option></select>
-    </label>
-   </div>
-   <p id="personalMonth" class="text-sm text-slate-500">Nessun prospetto caricato.</p>
-   <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Turni lavorativi</p><p id="personalWorkDays" class="text-2xl font-extrabold">—</p></div>
-    <div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Ore programmate*</p><p id="personalHours" class="text-2xl font-extrabold">—</p></div>
-    <div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Riposi (R1/R2/RZ)</p><p id="personalRestDays" class="text-2xl font-extrabold">—</p></div>
-    <div class="rounded-xl border bg-slate-50 p-4"><p class="text-xs text-slate-500">Ferie / OFF</p><p id="personalLeaveDays" class="text-2xl font-extrabold">—</p></div>
-   </div>
-   <p class="text-xs text-slate-500">*Stima basata su 8 ore per ogni codice H riconosciuto. È un riepilogo automatico: verifica sempre il prospetto originale.</p>
-  </div>
-  <div class="bg-white rounded-2xl p-5 shadow-sm">
-   <h2 class="text-xl font-bold">I miei prospetti PDF</h2>
-   <p class="mt-2 text-slate-600">Prima conserviamo il documento originale. Poi estraiamo soltanto la tua riga personale: niente importazioni forzate dell’intero tabellone.</p>
-   <div class="mt-4 flex flex-wrap items-center gap-3">
-    <label for="pdfFile" class="cursor-pointer rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 font-semibold">📄 Seleziona PDF</label>
-    <input id="pdfFile" type="file" accept=".pdf,application/pdf" class="hidden">
-    <span id="fileName" class="text-sm text-slate-500">Nessun file caricato</span>
-   </div>
-   <div id="status" role="status" class="mt-4 hidden rounded-xl p-3 text-sm"></div>
-   <div class="mt-4 grid md:grid-cols-3 gap-3">
-    <div class="rounded-xl bg-slate-50 border p-4"><div class="text-sm text-slate-500">Dipendenti letti</div><div id="statEmployees" class="text-2xl font-bold">—</div></div>
-    <div class="rounded-xl bg-slate-50 border p-4"><div class="text-sm text-slate-500">Giorni individuati</div><div id="statDays" class="text-2xl font-bold">—</div></div>
-    <div class="rounded-xl bg-slate-50 border p-4"><div class="text-sm text-slate-500">Mese del prospetto</div><div id="statMonth" class="text-xl font-bold">—</div></div>
-   </div>
-  </div>
-  <div class="bg-white rounded-2xl p-5 shadow-sm border border-blue-100">
-   <div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-bold text-lg">📚 Archivio documenti salvati</h3><p class="text-sm text-slate-500">I PDF vengono conservati subito sul dispositivo, anche se la lettura automatica non riesce.</p></div><span id="pdfVaultCount" class="rounded-full bg-blue-50 text-blue-800 px-3 py-1 text-xs font-bold">0 PDF</span></div>
-   <div id="pdfVaultList" class="mt-3 space-y-2"><p class="text-sm text-slate-500">Nessun PDF salvato.</p></div>
-   <p class="text-xs text-slate-400 mt-3">Archivio locale di questo dispositivo: i PDF originali non vengono caricati nel cloud. Conserva anche una copia esterna.</p>
-  </div>
-  <div class="bg-white rounded-2xl p-5 shadow-sm">
-   <h3 class="font-bold text-lg">Controllo prima dell'uso</h3>
-   <p class="text-sm text-slate-600 mt-1">Dopo l'importazione controlla il tabellone. Il sistema segnala le righe con un numero di turni diverso dai giorni del mese; non corregge automaticamente eventuali errori del PDF.</p>
-   <div id="warnings" class="mt-3 text-sm text-slate-600">Carica un PDF per iniziare.</div>
-   <section id="manualPersonalImport" class="hidden mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
-    <div><h3 class="font-bold text-base">Importazione personale guidata</h3><p class="text-sm text-slate-700 mt-1">Il PDF è stato conservato, ma il lettore non ha ricostruito le righe. Puoi inserire soltanto i tuoi turni, senza compilare tutto il tabellone.</p></div>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-     <label class="text-sm font-semibold">Mese<select id="manualMonth" class="mt-1 w-full border rounded-lg px-3 py-2"></select></label>
-     <label class="text-sm font-semibold">Anno<input id="manualYear" type="number" min="2020" max="2100" class="mt-1 w-full border rounded-lg px-3 py-2" value="2026"></label>
-     <label class="text-sm font-semibold col-span-2 md:col-span-1">Cognome e nome<input id="manualName" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="PALADINI MAURIZIO"></label>
-    </div>
-    <label class="block text-sm font-semibold">Turni dal giorno 1 in poi
-     <textarea id="manualShifts" rows="3" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono text-sm" placeholder="H16, H16, R1, H14, FER, ..."></textarea>
-    </label>
-    <p class="text-xs text-slate-600">Inserisci un codice per ogni giorno, separato da virgola o spazio. Codici riconosciuti: Hxx, Fxx, R1, R2, RZ, FER, TRN, OFF, 81, 82, M10. Verifica la sequenza sul PDF prima di confermare.</p>
-    <div class="flex flex-wrap gap-2"><button id="applyManualPersonal" type="button" class="rounded-lg bg-blue-700 text-white px-4 py-2 font-semibold">Crea il mio calendario</button><button id="cancelManualPersonal" type="button" class="rounded-lg border px-4 py-2">Chiudi</button></div>
-    <p id="manualImportMessage" class="text-sm" role="status"></p>
-   </section>
-    <div id="validationPanel" class="mt-4 rounded-xl border border-slate-200 p-3">
-     <div class="flex flex-wrap items-center justify-between gap-2">
-      <div><h4 class="font-bold">Confronto automatico PDF / turni importati</h4><p class="text-xs text-slate-500">Verifica numero di codici, nominativi duplicati, codici non riconosciuti e corrispondenza con la riga originale estratta.</p></div>
-      <button id="runValidation" type="button" class="rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-semibold">Ripeti controllo</button>
-     </div>
-     <div id="validationSummary" class="mt-3 text-sm text-slate-600">Carica un PDF per avviare il controllo.</div>
-     <div id="validationDetails" class="mt-3 overflow-auto"></div>
-    </div>
-  </div>
- </section>
- <section id="view-matrix" class="view hidden space-y-4">
-  <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
-   <div class="flex flex-wrap items-center justify-between gap-3">
-    <div><h2 class="text-xl font-bold">Tabellone completo</h2><p id="matrixSubtitle" class="text-sm text-slate-500">Carica prima un PDF.</p></div>
-    <div class="flex gap-2 flex-wrap no-print">
-     <button id="exportCsv" class="rounded-lg bg-emerald-600 text-white px-3 py-2">Esporta CSV</button>
-     <button onclick="window.print()" class="rounded-lg bg-slate-800 text-white px-3 py-2">Stampa</button>
-    </div>
-   </div>
-   <div class="flex flex-wrap gap-2 no-print">
-    <input id="search" type="search" placeholder="Cerca nome, cognome o ID…" class="border rounded-lg px-3 py-2 flex-1 min-w-48">
-    <button id="selectedOnly" class="border rounded-lg px-3 py-2">Solo selezionati</button>
-    <button id="clearSelection" class="border rounded-lg px-3 py-2">Azzera selezione</button>
-    <label class="flex items-center gap-2 text-sm font-semibold">Visualizzazione
-     <select id="shiftDisplayMode" class="border rounded-lg px-3 py-2">
-      <option value="code">Codice turno (H14)</option>
-      <option value="time">Orario (07:00–15:00)</option>
-     </select>
-    </label>
-   </div>
-   <div id="selectionInfo" class="text-sm text-slate-500 no-print">Tocca una riga per selezionare un dipendente.</div>
-   <p class="text-xs text-slate-500">Modalità orario: il numero del codice H viene diviso per 2 e interpretato come ora di inizio; la fine è calcolata aggiungendo 8 ore. R1, R2, RZ, FER, TRN e OFF restano codici.</p>
-  </div>
-  <div id="matrixWrap" class="bg-white rounded-xl shadow-sm border overflow-auto max-h-[72vh]">
-   <div id="matrixEmpty" class="p-10 text-center text-slate-500">Il tabellone apparirà qui dopo il caricamento del PDF.</div>
-   <table id="matrixTable" class="border-collapse text-xs hidden w-full"></table>
-  </div>
- </section>
- 
-<section id="view-compare" class="view hidden space-y-4"><div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm space-y-4">
-<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl md:text-2xl font-extrabold">Confronto colleghi</h2><p id="compareSubtitle" class="text-sm text-slate-500">Confronta il tuo prospetto con più colleghi nello stesso momento.</p></div><button id="compareOnlyDiff" class="rounded-lg border px-3 py-2 text-sm font-semibold">Mostra solo differenze</button></div>
-<div class="grid md:grid-cols-2 gap-3"><label class="text-sm font-semibold">Il mio nominativo<select id="compareMine" class="mt-1 block w-full border rounded-lg px-3 py-2"></select></label><div class="text-sm"><div class="font-semibold mb-1">Colleghi da confrontare</div><div id="comparePeople" class="border rounded-xl p-2 max-h-48 overflow-auto text-sm text-slate-600">Carica un PDF per selezionare i colleghi.</div></div></div>
+<div class="mt-4 rounded-xl border border-slate-200 p-3" id="validationPanel">
+<div class="flex flex-wrap items-center justify-between gap-2">
+<div><h4 class="font-bold">Confronto automatico PDF / turni importati</h4><p class="text-xs text-slate-500">Verifica numero di codici, nominativi duplicati, codici non riconosciuti e corrispondenza con la riga originale estratta.</p></div>
+<button class="rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-semibold" id="runValidation" type="button">Ripeti controllo</button>
+</div>
+<div class="mt-3 text-sm text-slate-600" id="validationSummary">Carica un PDF per avviare il controllo.</div>
+<div class="mt-3 overflow-auto" id="validationDetails"></div>
+</div>
+</div>
+<section class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-blue-100 space-y-3" id="personalProfileCard">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div><div class="text-xs uppercase tracking-wide text-blue-600 font-bold">Area personale</div><h2 class="text-xl font-extrabold">Il mio profilo turni</h2><p class="text-sm text-slate-500">Il tuo nominativo viene salvato su questo dispositivo. I mesi già importati restano disponibili senza ricaricare il PDF.</p></div>
+<span class="text-xs rounded-full bg-slate-100 px-3 py-1" id="profileStatus">Profilo non configurato</span>
+</div>
+<div class="grid md:grid-cols-3 gap-3 items-end">
+<label class="text-sm font-semibold md:col-span-2">Seleziona il tuo nominativo
+     <select class="mt-1 block w-full border rounded-lg px-3 py-2" id="profileEmployee"><option value="">Importa un primo PDF per scegliere il nominativo</option></select>
+</label>
+<button class="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-semibold" id="saveProfile">Salva il mio profilo</button>
+</div>
+<div class="flex flex-wrap gap-2 text-sm">
+<button class="rounded-lg border px-3 py-2" id="openMyCalendar">Apri il mio calendario</button>
+<button class="rounded-lg border px-3 py-2" id="openMyCompare">Confronta con colleghi</button>
+<button class="rounded-lg border px-3 py-2" id="loadLatestMonth">Carica ultimo mese archiviato</button>
+</div>
+<p class="text-xs text-slate-500" id="profileArchiveInfo">I dati sono conservati nel browser di questo dispositivo. Per trasferirli su un altro dispositivo usa Backup / Ripristino.</p>
+</section><section class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-emerald-100 space-y-3" id="cloudSyncCard">
+<div class="flex flex-wrap items-center justify-between gap-2"><div><div class="text-xs uppercase tracking-wide text-emerald-700 font-bold">Sincronizzazione online</div><h2 class="text-xl font-extrabold">Il tuo archivio cloud</h2><p class="text-sm text-slate-500">Accedi con il tuo account per sincronizzare profilo e turni tra dispositivi.</p></div><span class="text-xs rounded-full bg-slate-100 px-3 py-1" id="cloudState">Non configurata</span></div>
+<details class="rounded-xl border p-3" hidden="" id="adminCloudConfig"><summary class="font-semibold cursor-pointer flex items-center gap-2">⚙️ Configurazione Cloud — Area amministratore <span class="ml-auto text-[10px] uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-1 rounded-full">Admin</span></summary><p class="text-xs text-slate-500 mt-2">Inserisci l'URL del tuo progetto Supabase e la chiave anon/public. Non inserire mai la service_role key.</p>
+<div class="grid md:grid-cols-2 gap-2 mt-2"><label class="text-sm">URL progetto<input class="mt-1 w-full border rounded-lg px-3 py-2" id="cloudUrl" placeholder="https://xxxx.supabase.co" type="url"/></label><label class="text-sm">Chiave anon/public<input class="mt-1 w-full border rounded-lg px-3 py-2" id="cloudAnon" placeholder="eyJ..." type="password"/></label></div><button class="mt-2 rounded-lg bg-slate-800 text-white px-4 py-2 text-sm font-semibold" id="saveCloudConfig">Salva configurazione</button>
+</details>
+<div class="rounded-xl bg-slate-50 border border-slate-200 p-3"><div class="flex items-center gap-2 mb-2"><span>🔐</span><span class="font-semibold text-sm">Accesso personale</span><span class="ml-auto text-[10px] uppercase tracking-wider rounded-full bg-slate-200 px-2 py-1 text-slate-600" id="accountRole">Dipendente</span></div><div class="grid md:grid-cols-2 gap-2"><label class="text-sm">Email<input autocomplete="username" class="mt-1 w-full border rounded-lg px-3 py-2" id="cloudEmail" placeholder="La tua email" type="email"/></label><label class="text-sm">Password<input autocomplete="current-password" class="mt-1 w-full border rounded-lg px-3 py-2" id="cloudPassword" placeholder="Password account cloud" type="password"/></label></div></div>
+<div class="flex flex-wrap gap-2"><button class="rounded-lg border px-3 py-2 text-sm font-semibold" id="cloudRegister">Crea account</button><button class="rounded-lg bg-emerald-600 text-white px-3 py-2 text-sm font-semibold" id="cloudLogin">Accedi</button><button class="rounded-lg border px-3 py-2 text-sm" id="cloudLogout">Esci</button><button class="rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-semibold" id="cloudSyncNow">Sincronizza adesso</button></div>
+<p class="text-xs text-slate-500 flex items-start gap-2"><span>🛡️</span><span>I tuoi dati sono privati: ogni account accede soltanto al proprio archivio. La configurazione amministrativa non viene mostrata agli account dipendente.</span></p>
+<p aria-live="polite" class="text-sm text-slate-600" id="cloudMessage">Per attivare la sincronizzazione devi prima creare il progetto Supabase e applicare lo script SQL incluso nello ZIP.</p>
+<p class="text-xs text-slate-500">La sincronizzazione comprende profilo e dati dei mesi. I PDF originali restano sul dispositivo in questa versione: per sincronizzare anche i PDF servirà attivare lo spazio file cloud.</p>
+</section></section>
+<section class="view hidden space-y-4" id="view-matrix">
+<div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div><h2 class="text-xl font-bold">Tabellone completo</h2><p class="text-sm text-slate-500" id="matrixSubtitle">Carica prima un PDF.</p></div>
+<div class="flex gap-2 flex-wrap no-print">
+<button class="rounded-lg bg-emerald-600 text-white px-3 py-2" id="exportCsv">Esporta CSV</button>
+<button class="rounded-lg bg-slate-800 text-white px-3 py-2" onclick="window.print()">Stampa</button>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 no-print">
+<input class="border rounded-lg px-3 py-2 flex-1 min-w-48" id="search" placeholder="Cerca nome, cognome o ID…" type="search"/>
+<button class="border rounded-lg px-3 py-2" id="selectedOnly">Solo selezionati</button>
+<button class="border rounded-lg px-3 py-2" id="clearSelection">Azzera selezione</button>
+<label class="flex items-center gap-2 text-sm font-semibold">Visualizzazione
+     <select class="border rounded-lg px-3 py-2" id="shiftDisplayMode">
+<option value="code">Codice turno (H14)</option>
+<option value="time">Orario (07:00–15:00)</option>
+</select>
+</label>
+</div>
+<div class="text-sm text-slate-500 no-print" id="selectionInfo">Tocca una riga per selezionare un dipendente.</div>
+<p class="text-xs text-slate-500">Modalità orario: il numero del codice H viene diviso per 2 e interpretato come ora di inizio; la fine è calcolata aggiungendo 8 ore. R1, R2, RZ, FER, TRN e OFF restano codici.</p>
+</div>
+<div class="bg-white rounded-xl shadow-sm border overflow-auto max-h-[72vh]" id="matrixWrap">
+<div class="p-10 text-center text-slate-500" id="matrixEmpty">Il tabellone apparirà qui dopo il caricamento del PDF.</div>
+<table class="border-collapse text-xs hidden w-full" id="matrixTable"></table>
+</div>
+</section>
+<section class="view hidden space-y-4" id="view-compare"><div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl md:text-2xl font-extrabold">Confronto colleghi</h2><p class="text-sm text-slate-500" id="compareSubtitle">Confronta il tuo prospetto con più colleghi nello stesso momento.</p></div><button class="rounded-lg border px-3 py-2 text-sm font-semibold" id="compareOnlyDiff">Mostra solo differenze</button></div>
+<div class="grid md:grid-cols-2 gap-3"><label class="text-sm font-semibold">Il mio nominativo<select class="mt-1 block w-full border rounded-lg px-3 py-2" id="compareMine"></select></label><div class="text-sm"><div class="font-semibold mb-1">Colleghi da confrontare</div><div class="border rounded-xl p-2 max-h-48 overflow-auto text-sm text-slate-600" id="comparePeople">Carica un PDF per selezionare i colleghi.</div></div></div>
 <div class="flex flex-wrap gap-3 text-xs text-slate-600"><span>🟩 Uguale</span><span>🟨 Turno diverso</span><span>🟥 Lavoro/riposo diverso</span><span>⬜ Dato mancante</span></div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-2"><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Colleghi selezionati</div><div id="compareCount" class="text-2xl font-bold">0</div></div><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Giorni con differenze</div><div id="compareDiffDays" class="text-2xl font-bold">0</div></div><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Giornate lavorative uguali</div><div id="compareSameWork" class="text-2xl font-bold">0</div></div><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Lavoro/riposo diverso</div><div id="compareWorkRest" class="text-2xl font-bold">0</div></div></div>
-<div id="compareTableWrap" class="overflow-auto max-h-[70vh] border rounded-xl"><div id="compareEmpty" class="p-8 text-center text-slate-500">Seleziona il tuo nominativo e almeno un collega.</div><table id="compareTable" class="hidden border-collapse text-xs min-w-full"></table></div><p class="text-xs text-slate-500">Il confronto usa i codici originali del PDF, non le modifiche personali. Una differenza non significa necessariamente un errore o uno scambio approvato.</p></div></section>
-<section id="view-split" class="view hidden space-y-4"><div class="bg-white rounded-2xl p-4 shadow-sm"><h2 class="text-xl font-bold">Documento originale e tabellone</h2><p class="text-sm text-slate-500">PDF a sinistra, prospetto ricostruito a destra.</p><span id="splitFileLabel" class="text-xs text-slate-500">Nessun PDF caricato</span></div><div class="grid grid-cols-1 xl:grid-cols-2 gap-3 items-start"><div class="bg-white rounded-xl border shadow-sm overflow-hidden"><div class="p-3 border-b font-bold text-sm">PDF originale</div><iframe id="originalPdfFrame" title="PDF originale dei turni" class="w-full bg-slate-100" style="height:78vh" src="about:blank"></iframe><div id="splitPdfEmpty" class="p-6 text-center text-sm text-slate-500">Importa un PDF per visualizzarlo qui.</div></div><div class="bg-white rounded-xl border shadow-sm overflow-hidden"><div class="p-3 border-b font-bold text-sm">Tabellone completo</div><div id="splitMatrixWrap" class="overflow-auto" style="height:78vh"><div class="p-6 text-sm text-slate-500">Il tabellone apparirà dopo l'importazione.</div><table id="splitMatrixTable" class="border-collapse text-xs hidden w-full"></table></div></div></div></section>
-<section id="view-calendar" class="view hidden space-y-4">
-  <div class="bg-white rounded-2xl p-4 shadow-sm flex flex-wrap items-center gap-3 justify-between">
-   <div><h2 class="text-xl font-bold">Calendario personale</h2><p id="calendarSubtitle" class="text-sm text-slate-500">Seleziona un dipendente.</p></div>
-   <div class="flex flex-wrap items-center gap-3">
-    <label class="text-sm font-semibold">Dipendente
-     <select id="employeeSelect" class="ml-2 border rounded-lg px-3 py-2 max-w-full"><option value="">Carica prima un PDF</option></select>
-    </label>
-    <label class="text-sm font-semibold">Visualizzazione
-     <select id="calendarDisplayMode" class="ml-2 border rounded-lg px-3 py-2">
-      <option value="code">Codice turno</option>
-      <option value="time">Orario</option>
-     </select>
-    </label>
-   </div>
-   <div class="mt-4 border-t pt-4 space-y-3 no-print">
-    <h3 class="font-bold">Archivio dei miei turni</h3>
-    <div class="flex flex-wrap gap-2 items-center">
-     <label class="text-sm font-semibold">Mese archiviato
-      <select id="archiveMonthSelect" class="ml-2 border rounded-lg px-3 py-2"><option value="">Nessun mese archiviato</option></select>
-     </label>
-     <button id="loadArchiveMonth" class="rounded-lg border px-3 py-2 font-semibold">Apri mese</button>
-     <button id="saveArchiveMonth" class="rounded-lg bg-emerald-600 text-white px-3 py-2 font-semibold">Salva mese attuale</button>
-     <button id="deleteArchiveMonth" class="rounded-lg border border-red-300 text-red-700 px-3 py-2">Elimina mese</button>
-    </div>
-    <div class="flex flex-wrap gap-2 items-center">
-     <button id="exportBackup" class="rounded-lg bg-slate-800 text-white px-3 py-2 font-semibold">Esporta backup</button>
-     <label for="importBackupFile" class="cursor-pointer rounded-lg border px-3 py-2 font-semibold">Ripristina backup</label>
-     <input id="importBackupFile" type="file" accept=".json,application/json" class="hidden">
-     <span class="text-xs text-slate-500">Archivio salvato in questo browser. Fai un backup per trasferire i mesi su un altro dispositivo.</span>
-    </div>
-   </div>
-  </div>
-  <div class="bg-white rounded-2xl p-3 md:p-5 shadow-sm max-w-4xl mx-auto">
-   <div class="flex flex-wrap justify-end gap-2 mb-3 no-print">
-    <button id="printCalendar" class="rounded-lg bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 font-semibold">🖨️ Stampa calendario</button>
-    <button id="exportIcs" class="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-semibold">Esporta calendario (.ics)</button>
-   </div>
-   <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
-   <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-600">
-    <span><i class="inline-block w-3 h-3 rounded bg-amber-200 mr-1"></i>Turno</span>
-    <span><i class="inline-block w-3 h-3 rounded bg-blue-200 mr-1"></i>Riposo</span>
-    <span><i class="inline-block w-3 h-3 rounded bg-red-200 mr-1"></i>Ferie/assenza</span>
-    <span><i class="inline-block w-3 h-3 rounded bg-green-200 mr-1"></i>OFF</span>
-   </div>
-  </div>
- </section>
- <section id="view-preview" class="view hidden space-y-4">
-  <div class="bg-white rounded-2xl p-5 shadow-sm">
-   <h2 class="text-xl font-bold">Testo estratto dal PDF</h2>
-   <p class="text-sm text-slate-500 mt-1">Anteprima tecnica utile per diagnosticare documenti con layout diverso.</p>
-   <pre id="rawText" class="mt-4 p-3 bg-slate-950 text-green-100 rounded-xl text-xs whitespace-pre-wrap overflow-auto max-h-[65vh]"></pre>
-  </div>
- </section>
- <div id="shiftEditor" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-3 no-print" role="dialog" aria-modal="true" aria-labelledby="shiftEditorTitle">
-  <div class="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl space-y-4">
-   <div class="flex items-start justify-between gap-3">
-    <div><h2 id="shiftEditorTitle" class="text-xl font-bold">Modifica turno</h2><p id="shiftEditorSubtitle" class="text-sm text-slate-500"></p></div>
-    <button id="closeShiftEditor" type="button" class="rounded-lg border px-3 py-1" aria-label="Chiudi">✕</button>
-   </div>
-   <div class="rounded-xl bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2"><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Colleghi selezionati</div><div class="text-2xl font-bold" id="compareCount">0</div></div><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Giorni con differenze</div><div class="text-2xl font-bold" id="compareDiffDays">0</div></div><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Giornate lavorative uguali</div><div class="text-2xl font-bold" id="compareSameWork">0</div></div><div class="rounded-xl border bg-slate-50 p-3"><div class="text-xs text-slate-500">Lavoro/riposo diverso</div><div class="text-2xl font-bold" id="compareWorkRest">0</div></div></div>
+<div class="overflow-auto max-h-[70vh] border rounded-xl" id="compareTableWrap"><div class="p-8 text-center text-slate-500" id="compareEmpty">Seleziona il tuo nominativo e almeno un collega.</div><table class="hidden border-collapse text-xs min-w-full" id="compareTable"></table></div><p class="text-xs text-slate-500">Il confronto usa i codici originali del PDF, non le modifiche personali. Una differenza non significa necessariamente un errore o uno scambio approvato.</p></div></section>
+<section class="view hidden space-y-4" id="view-split"><div class="bg-white rounded-2xl p-4 shadow-sm"><h2 class="text-xl font-bold">Documento originale e tabellone</h2><p class="text-sm text-slate-500">PDF a sinistra, prospetto ricostruito a destra.</p><span class="text-xs text-slate-500" id="splitFileLabel">Nessun PDF caricato</span></div><div class="grid grid-cols-1 xl:grid-cols-2 gap-3 items-start"><div class="bg-white rounded-xl border shadow-sm overflow-hidden"><div class="p-3 border-b font-bold text-sm">PDF originale</div><iframe class="w-full bg-slate-100" id="originalPdfFrame" src="about:blank" style="height:78vh" title="PDF originale dei turni"></iframe><div class="p-6 text-center text-sm text-slate-500" id="splitPdfEmpty">Importa un PDF per visualizzarlo qui.</div></div><div class="bg-white rounded-xl border shadow-sm overflow-hidden"><div class="p-3 border-b font-bold text-sm">Tabellone completo</div><div class="overflow-auto" id="splitMatrixWrap" style="height:78vh"><div class="p-6 text-sm text-slate-500">Il tabellone apparirà dopo l'importazione.</div><table class="border-collapse text-xs hidden w-full" id="splitMatrixTable"></table></div></div></div></section>
+<section class="view hidden space-y-4" id="view-calendar">
+<div class="bg-white rounded-2xl p-4 shadow-sm flex flex-wrap items-center gap-3 justify-between">
+<div><h2 class="text-xl font-bold">Calendario personale</h2><p class="text-sm text-slate-500" id="calendarSubtitle">Seleziona un dipendente.</p></div>
+<div class="flex flex-wrap items-center gap-3">
+<label class="text-sm font-semibold">Dipendente
+     <select class="ml-2 border rounded-lg px-3 py-2 max-w-full" id="employeeSelect"><option value="">Carica prima un PDF</option></select>
+</label>
+<label class="text-sm font-semibold">Visualizzazione
+     <select class="ml-2 border rounded-lg px-3 py-2" id="calendarDisplayMode">
+<option value="code">Codice turno</option>
+<option value="time">Orario</option>
+</select>
+</label>
+</div>
+<div class="mt-4 border-t pt-4 space-y-3 no-print">
+<h3 class="font-bold">Archivio dei miei turni</h3>
+<div class="flex flex-wrap gap-2 items-center">
+<label class="text-sm font-semibold">Mese archiviato
+      <select class="ml-2 border rounded-lg px-3 py-2" id="archiveMonthSelect"><option value="">Nessun mese archiviato</option></select>
+</label>
+<button class="rounded-lg border px-3 py-2 font-semibold" id="loadArchiveMonth">Apri mese</button>
+<button class="rounded-lg bg-emerald-600 text-white px-3 py-2 font-semibold" id="saveArchiveMonth">Salva mese attuale</button>
+<button class="rounded-lg border border-red-300 text-red-700 px-3 py-2" id="deleteArchiveMonth">Elimina mese</button>
+</div>
+<div class="flex flex-wrap gap-2 items-center">
+<button class="rounded-lg bg-slate-800 text-white px-3 py-2 font-semibold" id="exportBackup">Esporta backup</button>
+<label class="cursor-pointer rounded-lg border px-3 py-2 font-semibold" for="importBackupFile">Ripristina backup</label>
+<input accept=".json,application/json" class="hidden" id="importBackupFile" type="file"/>
+<span class="text-xs text-slate-500">Archivio salvato in questo browser. Fai un backup per trasferire i mesi su un altro dispositivo.</span>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-3 md:p-5 shadow-sm max-w-4xl mx-auto">
+<div class="flex flex-wrap justify-end gap-2 mb-3 no-print">
+<button class="rounded-lg bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 font-semibold" id="printCalendar">🖨️ Stampa calendario</button>
+<button class="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-semibold" id="exportIcs">Esporta calendario (.ics)</button>
+</div>
+<div class="grid grid-cols-7 gap-1" id="calendarGrid"></div>
+<div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-600">
+<span><i class="inline-block w-3 h-3 rounded bg-amber-200 mr-1"></i>Turno</span>
+<span><i class="inline-block w-3 h-3 rounded bg-blue-200 mr-1"></i>Riposo</span>
+<span><i class="inline-block w-3 h-3 rounded bg-red-200 mr-1"></i>Ferie/assenza</span>
+<span><i class="inline-block w-3 h-3 rounded bg-green-200 mr-1"></i>OFF</span>
+</div>
+</div>
+</section>
+<section class="view hidden space-y-4" id="view-preview">
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<h2 class="text-xl font-bold">Testo estratto dal PDF</h2>
+<p class="text-sm text-slate-500 mt-1">Anteprima tecnica utile per diagnosticare documenti con layout diverso.</p>
+<pre class="mt-4 p-3 bg-slate-950 text-green-100 rounded-xl text-xs whitespace-pre-wrap overflow-auto max-h-[65vh]" id="rawText"></pre>
+</div>
+</section>
+<div aria-labelledby="shiftEditorTitle" aria-modal="true" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-3 no-print" id="shiftEditor" role="dialog">
+<div class="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl space-y-4">
+<div class="flex items-start justify-between gap-3">
+<div><h2 class="text-xl font-bold" id="shiftEditorTitle">Modifica turno</h2><p class="text-sm text-slate-500" id="shiftEditorSubtitle"></p></div>
+<button aria-label="Chiudi" class="rounded-lg border px-3 py-1" id="closeShiftEditor" type="button">✕</button>
+</div>
+<div class="rounded-xl bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
     Il codice originale del PDF rimane conservato. La modifica è personale e non sostituisce l'approvazione ufficiale dello scambio.
    </div>
-   <div class="space-y-1">
-    <label for="editShiftCode" class="block text-sm font-semibold">Nuovo codice turno</label>
-    <select id="editShiftCode" class="w-full border rounded-lg px-3 py-2">
-     <option>H10</option><option>H12</option><option>H14</option><option>H16</option><option>H18</option><option>H20</option><option>H22</option><option>H24</option><option>H26</option><option>H28</option><option>H30</option><option>R1</option><option>R2</option><option>RZ</option><option>FER</option><option>TRN</option><option>OFF</option><option value="__custom">Altro codice…</option>
-    </select>
-    <input id="editShiftCustom" class="hidden w-full border rounded-lg px-3 py-2 mt-2" placeholder="Inserisci codice (es. H08)" maxlength="12" />
-   </div>
-   <div class="space-y-1">
-    <label for="editShiftStatus" class="block text-sm font-semibold">Stato dello scambio</label>
-    <select id="editShiftStatus" class="w-full border rounded-lg px-3 py-2">
-     <option value="pending">Da verificare</option>
-     <option value="approved">Approvato (conferma ricevuta)</option>
-    </select>
-   </div>
-   <div class="flex flex-wrap gap-2 justify-between pt-2">
-    <button id="resetShiftEdit" type="button" class="rounded-lg border border-red-300 text-red-700 px-3 py-2">Ripristina originale</button>
-    <div class="flex gap-2 ml-auto">
-     <button id="cancelShiftEdit" type="button" class="rounded-lg border px-3 py-2">Annulla</button>
-     <button id="saveShiftEdit" type="button" class="rounded-lg bg-blue-600 text-white px-4 py-2 font-semibold">Salva modifica</button>
-    </div>
-   </div>
-  </div>
- </div>
- <footer class="text-center text-xs text-slate-500 py-4">I dati vengono elaborati nel browser. Verifica sempre il tabellone rispetto al PDF originale.</footer>
+<div class="space-y-1">
+<label class="block text-sm font-semibold" for="editShiftCode">Nuovo codice turno</label>
+<select class="w-full border rounded-lg px-3 py-2" id="editShiftCode">
+<option>H10</option><option>H12</option><option>H14</option><option>H16</option><option>H18</option><option>H20</option><option>H22</option><option>H24</option><option>H26</option><option>H28</option><option>H30</option><option>R1</option><option>R2</option><option>RZ</option><option>FER</option><option>TRN</option><option>OFF</option><option value="__custom">Altro codice…</option>
+</select>
+<input class="hidden w-full border rounded-lg px-3 py-2 mt-2" id="editShiftCustom" maxlength="12" placeholder="Inserisci codice (es. H08)">
+</input></div>
+<div class="space-y-1">
+<label class="block text-sm font-semibold" for="editShiftStatus">Stato dello scambio</label>
+<select class="w-full border rounded-lg px-3 py-2" id="editShiftStatus">
+<option value="pending">Da verificare</option>
+<option value="approved">Approvato (conferma ricevuta)</option>
+</select>
+</div>
+<div class="flex flex-wrap gap-2 justify-between pt-2">
+<button class="rounded-lg border border-red-300 text-red-700 px-3 py-2" id="resetShiftEdit" type="button">Ripristina originale</button>
+<div class="flex gap-2 ml-auto">
+<button class="rounded-lg border px-3 py-2" id="cancelShiftEdit" type="button">Annulla</button>
+<button class="rounded-lg bg-blue-600 text-white px-4 py-2 font-semibold" id="saveShiftEdit" type="button">Salva modifica</button>
+</div>
+</div>
+</div>
+</div>
+<footer class="text-center text-xs text-slate-500 py-4">I dati vengono elaborati nel browser. Verifica sempre il tabellone rispetto al PDF originale.</footer>
 </main>
-<nav class="bottom-nav no-print md:hidden" aria-label="Navigazione principale">
- <div class="max-w-screen-2xl mx-auto flex">
-  <button data-go="home" class="active"><span>🏠</span><span>Home</span></button>
-  <button data-go="matrix"><span>📊</span><span>Tabellone</span></button>
-  <button data-go="calendar"><span>📅</span><span>Calendario</span></button>
-  <button data-go="compare"><span>⇄</span><span>Confronta</span></button>
-  <button data-go="split"><span>▤</span><span>PDF+tabella</span></button>
-  <button id="mobileImport"><span>📄</span><span>Importa PDF</span></button>
- </div>
+<nav aria-label="Navigazione principale" class="bottom-nav no-print md:hidden">
+<div class="max-w-screen-2xl mx-auto flex">
+<button class="active" data-go="home"><span>🏠</span><span>Home</span></button>
+<button data-go="matrix"><span>📊</span><span>Tabellone</span></button>
+<button data-go="calendar"><span>📅</span><span>Calendario</span></button>
+<button data-go="compare"><span>⇄</span><span>Confronta</span></button>
+<button data-go="split"><span>▤</span><span>PDF+tabella</span></button>
+<button id="mobileImport"><span>📄</span><span>Importa PDF</span></button>
+</div>
 </nav>
 <script>
 'use strict';
@@ -1094,7 +1093,6 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(e=>console.warn('Service worker:',e)));
 }
 </script>
-
 <script>
 (()=>{
  const CFG='gestionale-turni-cloud-config-v1', ARCH='gestionale-turni-archive-v1', PROF='gestionale-turni-user-profile-v1', OWNER='gestionale-turni-cloud-owner-v1';
@@ -1141,6 +1139,5 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
  const c=getConfig();if(c.url)$('cloudUrl').value=c.url;if(c.key)$('cloudAnon').value=c.key;updateAdminVisibility();if(initClient())refreshSession();
 })();
 </script>
-
 </body>
 </html>
