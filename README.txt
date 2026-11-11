@@ -156,3 +156,10 @@ VERSIONE 20 - IMPORTAZIONE PERSONALE GUIDATA
 - Il calendario personale viene salvato nell'archivio locale e nel profilo selezionato.
 - Il PDF originale resta conservato nell'archivio documenti.
 Nota: il fallback manuale è per mesi completi; prospetti parziali richiedono ancora una lettura automatica corretta.
+
+VERSIONE 21 - RAZIONALIZZAZIONE E HOME PAGE
+- Uniformato il sistema visivo: spaziature, bordi, ombre, navigazione, controlli e resa mobile.
+- Home page semplificata con gerarchia più chiara tra prossimo turno, azioni rapide, riepilogo personale e archivio documenti.
+- Rimosso il salvataggio duplicato del PDF con chiave mese: il mese conserva il riferimento al PDF originale salvato nell'archivio inbox.
+- Migliorato il messaggio di errore quando il salvataggio locale dell'archivio non riesce.
+- Incrementata la versione cache del service worker.
